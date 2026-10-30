@@ -1,5 +1,5 @@
 # Sistema-de-controle-de-estoque-V1.0.0
-# 📦 Furos de Estoque — Controle de Peças
+# 📦 Furos de Estoque  Controle de Peças
 
 #link: sistema-de-controle-de-estoque-v100.vercel.app
 
