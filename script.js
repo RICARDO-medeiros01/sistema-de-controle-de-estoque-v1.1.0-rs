@@ -364,6 +364,35 @@ document.addEventListener('keydown', e => {
     }
 });
 
+// ── TEMA DIA / NOITE ──────────────────────────────────────────────────────────
+function updateThemeUI(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const label = document.getElementById('theme-label');
+    if (label) {
+        label.textContent = theme === 'light' ? 'Modo Noite' : 'Modo Dia';
+    }
+    const btn = document.getElementById('theme-toggle');
+    if (btn) {
+        btn.setAttribute('title', theme === 'light' ? 'Ativar Modo Noite' : 'Ativar Modo Dia');
+    }
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', next);
+    updateThemeUI(next);
+    toast(next === 'light' ? 'Modo Dia ativado!' : 'Modo Noite ativado!');
+}
+
+const themeToggleBtn = document.getElementById('theme-toggle');
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+}
+
+const initialTheme = localStorage.getItem('theme') || 'dark';
+updateThemeUI(initialTheme);
+
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────────────
 renderTable();
 updateStats();

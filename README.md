@@ -1,109 +1,124 @@
-# Sistema-de-controle-de-estoque-V1.0.0
-# 📦 Furos de Estoque  Controle de Peças
+# Sistema-de-controle-de-estoque-V1.1.0 v.web
+# 📦 Furos de Estoque & 🚚 Controle de Devoluções
 
-#link: sistema-de-controle-de-estoque-v100.vercel.app
+> Sistema web integrado para **gestão de estoque operacional**, combinando o registro de **furos de estoque (divergências / estoque morto)** com o **controle e acompanhamento de devoluções de peças à fábrica**.
 
-> Sistema web para **registro e controle de furos de estoque**, permitindo rastrear peças com código, alocação, quantidade, tipo de furo e motivo da ocorrência.
-
-
-## 📋 Sobre o Projeto
-
-**Furos de Estoque** é uma aplicação web voltada para o controle operacional de peças em armazém ou almoxarifado. Permite registrar ocorrências de furo (divergência de estoque), filtrá-las por tipo e exportar relatórios em XLS ou PDF.
-
-O sistema foi desenvolvido com foco em usabilidade para equipes de logística e controle de qualidade.
+🔗 **Acesse online:** [sistema-de-controle-de-estoque-v100.vercel.app](https://sistema-de-controle-de-estoque-v100.vercel.app)
 
 ---
 
-## ✨ Funcionalidades
+## 🚀 Novidades da Versão 1.1.0
 
-- ✅ **Registro de peças** com código, alocação, quantidade e data
-- 🔍 **Busca** por código, alocação ou motivo
-- 🏷️ **Filtro** por tipo de furo
-- 📊 **Dashboard resumido** com total de registros, registros do mês e alocações ativas
-- 📤 **Exportação** para XLS e PDF
-- 🗃️ **Tabela de registros** com colunas: `#`, `Código`, `QTD`, `Alocação`, `Data`, `Tipo de Furo`, `Motivo`
+- 🌓 **Modo Dia e Noite (Dark / Light Theme):**
+  - **Botão de Alternância no Cabeçalho:** Posicionado em local de fácil visualização em ambas as telas, com transição animada entre os ícones de Sol ☀️ e Lua 🌙.
+  - **Modo Noite:** Estética escura moderna com tons de azul marinho profundo e acentos em neon lime.
+  - **Modo Dia:** Paleta moderna e harmoniosa baseada em Branco (`#FFFFFF`), Pêssego suave (`#FFD6CE`), Laranja vibrante (`#FF5C00`), Preto (`#000000`) e Cinza neutro (`#989898`).
+  - **Persistência Automática:** A preferência selecionada é salva no `localStorage` e sincronizada instantaneamente entre as páginas sem piscar na tela (*anti-flicker*).
 
----
+- 🚚 **Módulo Dedicado de Devoluções à Fábrica:**
+  - Interface desenvolvida para o almoxarifado rastrear o fluxo de devoluções de peças com controle de prazo de **7 dias corridos**.
+  - Arquitetura totalmente modularizada com arquivos próprios ([Control_devolucoes.html](file:///c:/Users/abaca/Desktop/sistema-de-controle-de-estoque-v1.0.0-rs-main/conrole%20de%20devolu%C3%A7%C3%B5es/Control_devolucoes.html), [style_control_devolucoes.css](file:///c:/Users/abaca/Desktop/sistema-de-controle-de-estoque-v1.0.0-rs-main/conrole%20de%20devolu%C3%A7%C3%B5es/style_control_devolucoes.css) e [script_control_devolucoes.js](file:///c:/Users/abaca/Desktop/sistema-de-controle-de-estoque-v1.0.0-rs-main/conrole%20de%20devolu%C3%A7%C3%B5es/script_control_devolucoes.js)).
 
-## 🧩 Campos do Formulário
+- 🔄 **Navegação Integrada e Alinhada:**
+  - Botões de navegação no cabeçalho perfeitamente alinhados para transitar de forma rápida entre as telas de *Furos de Estoque* e *Devoluções*.
 
-| Campo              | Obrigatório | Descrição                                 |
-|--------------------|:-----------:|-------------------------------------------|
-| Código da Peça     | ✅           | Ex: `PEÇ-00142`                           |
-| Alocação           | ✅           | Ex: `Corredor A / Prateleira 3`           |
-| Quantidade         | ✅           | Número inteiro positivo                   |
-| Data de Inserção   | ✅           | Data do registro do furo                  |
-| Tipo de Furo       | ❌           | Selecionável via dropdown                 |
-| Motivo / Observação| ❌           | Texto livre descrevendo a ocorrência      |
+- 📅 **Padronização Visual & Datas Centralizadas:**
+  - Data do sistema com destaque centralizado no cabeçalho e uniformidade visual entre tabelas, formulários e métricas.
 
 ---
 
-## 🚀 Como Executar
+## 📋 Módulos do Sistema
 
-```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/furos-de-estoque.git
+### 1. 📦 Furos de Estoque (Estoque Morto)
+Voltado para o controle operacional e auditoria de divergências no armazém ou almoxarifado.
 
-# Acesse a pasta do projeto
-cd furos-de-estoque
+- **Campos de Registro:**
+  - Código da Peça *(obrigatório)*
+  - Alocação no armazém *(obrigatório)*
+  - Quantidade *(obrigatório)*
+  - Data de Inserção *(obrigatório)*
+  - Tipo de Furo *(selecionável via dropdown)*
+  - Motivo / Observação detalhada *(opcional)*
+- **Recursos Principais:**
+  - Dashboard resumido com total de registros, registros do mês e alocações ativas.
+  - Busca dinâmica por código, alocação ou motivo.
+  - Filtro interativo por tipo de furo.
+  - Exportação direta de dados para **XLS** e relatórios formatados em **PDF**.
 
-# Instale as dependências (se aplicável)
-npm install
+### 2. 🚚 Controle de Devoluções (Almoxarifado → Fábrica)
+Desenvolvido para gerenciar a rotina de envio de peças com defeito, garantia ou devolução para a matriz/fábrica.
 
-# Inicie o servidor de desenvolvimento
-npm run dev
-```
-
-> Acesse no navegador: `http://localhost:3000`
+- **Campos de Lançamento:**
+  - Código da Peça *(obrigatório)*
+  - Quantidade *(obrigatório)*
+  - Número da Nota Fiscal (NF) *(obrigatório)*
+  - DISP / Chamado de Devolução *(opcional no lançamento, com preenchimento posterior facilitado)*
+  - Data de Entrada *(preenchimento automático)*
+- **Recursos Principais:**
+  - Contador de prazo limite de **7 dias corridos** a partir da data de inserção.
+  - Alertas dinâmicos no cabeçalho: **Vencidas**, **Até 2 Dias**, **Sem DISP** e **Total de Peças**.
+  - Ações rápidas na tabela: editar DISP com um clique, confirmar devolução e excluir registro.
+  - Exportação de dados para **XLSX**, **CSV** e cópia rápida da tabela para a área de transferência.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **HTML5 / CSS3**
-- **JavaScript** (ou framework utilizado)
-- **[Biblioteca de exportação XLS]** — ex: SheetJS
-- **[Biblioteca de exportação PDF]** — ex: jsPDF
-
-> ⚙️ *Atualize esta seção conforme as tecnologias reais do projeto.*
+- **HTML5 Semântico:** Estrutura clara, acessível e responsiva.
+- **CSS3 Moderno:** Variáveis CSS (`:root[data-theme]`), Flexbox, CSS Grid e transições suaves.
+- **JavaScript Vanilla (ES6+):** Código limpo, modular, reativo e com persistência local via `localStorage`.
+- **SheetJS (xlsx.full.min.js):** Geração e download de planilhas Excel.
+- **jsPDF & html2canvas:** Criação de relatórios em PDF.
 
 ---
 
-## 📁 Estrutura de Pastas
+## 📁 Estrutura do Projeto
 
 ```
-furos-de-estoque/
-├── public/
-│   └── index.html
-├── src/
-│   ├── components/
-│   ├── styles/
-│   └── main.js
-├── README.md
-└── package.json
+sistema-de-controle-de-estoque/
+├── index.html                    # Interface principal (Furos de Estoque)
+├── style.css                     # Estilos gerais e suporte a temas Dia/Noite
+├── script.js                     # Lógica de furos de estoque, filtros e tema
+├── README.md                     # Documentação completa do projeto
+├── assets/                       # Recursos visuais e ícones
+│   ├── caminhao-grande.png
+│   ├── favcon.jpg
+│   └── AdobeColor-My Color Theme.jpeg
+└── conrole de devoluções/         # Módulo isolado de Devoluções
+    ├── Control_devolucoes.html   # Tela de controle de devoluções à fábrica
+    ├── style_control_devolucoes.css # Estilos dedicados e temas Dia/Noite
+    └── script_control_devolucoes.js # Lógica de prazos de 7 dias, DISP e exportações
 ```
+
+---
+
+## 🚀 Como Executar
+
+Por ser uma aplicação web pura (client-side), não requer compilação ou instalação de servidores pesados:
+
+1. **Clone ou baixe o repositório:**
+   ```bash
+   git clone https://github.com/seu-usuario/sistema-de-controle-de-estoque.git
+   cd sistema-de-controle-de-estoque
+   ```
+
+2. **Abra no navegador:**
+   - Dê um duplo clique no arquivo `index.html`, ou
+   - Use uma extensão como o **Live Server** no VS Code.
+
+3. **Deploy:**
+   - Totalmente compatível com hospedagem estática gratuita no **Vercel**, **Netlify** ou **GitHub Pages**.
 
 ---
 
 ## 📈 Roadmap
 
-- [ ] Autenticação de usuários
-- [ ] Histórico por usuário
-- [ ] Gráficos de furos por período
-- [ ] Integração com sistema ERP
-- [ ] Notificações por e-mail em furos críticos
-
----
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Siga os passos:
-
-1. Faça um **fork** do projeto
-2. Crie uma branch: `git checkout -b feature/minha-feature`
-3. Commit suas alterações: `git commit -m 'feat: adiciona minha feature'`
-4. Push para a branch: `git push origin feature/minha-feature`
-5. Abra um **Pull Request**
+- [x] Módulo de Devoluções à Fábrica com controle de prazos
+- [x] Modo Dia e Noite com paleta personalizada e persistência
+- [x] Navegação unificada no cabeçalho
+- [ ] Autenticação e perfis de usuário
+- [ ] Gráficos interativos de motivos e divergências por período
+- [ ] Integração com banco de dados ou API de ERP
 
 ---
 
@@ -114,5 +129,5 @@ Este projeto está sob a licença [MIT](./LICENSE).
 ---
 
 <div align="center">
-  Feito com raiva e preguiça para otimizar o controle de estoque
+  Sistema de Controle de Estoque & Devoluções — Otimizando a logística e o almoxarifado
 </div>

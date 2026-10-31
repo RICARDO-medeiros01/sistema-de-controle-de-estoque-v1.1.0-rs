@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Devoluções — Almoxarifado</title>
+  <link rel="shortcut icon" href="../assets/caminhao-grande.png" type="image/x-icon">
+  <link rel="stylesheet" href="style_control_devolucoes.css">
+  <script>
+    (function () {
+      var theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ── CABEÇALHO ── -->
+  <header>
+    <div class="header-left">
+      <div class="header-titles">
+        <h1>DEVOLUÇÕES</h1>
+        <p>Almoxarifado — Devoluções à Fábrica</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="header-nav">
+        <!-- Botão de Alternar Modo Dia / Noite -->
+        <button type="button" class="btn btn-theme-toggle" id="theme-toggle" title="Alternar entre Modo Dia e Modo Noite" aria-label="Alternar tema">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span id="theme-label">Modo Dia</span>
+        </button>
+
+        <a href="../index.html" class="btn btn-header-nav" id="btn-back-stock" title="Voltar para o Estoque Morto">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Furos de Estoque
+        </a>
+        <button type="button" class="btn btn-ghost" id="btn-exit" style="padding: 8px 14px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Sair
+        </button>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat date-stat">
+          <div class="stat-val" id="today-d">--/--/----</div>
+          <div class="stat-lbl" id="today-w">Data do Sistema</div>
+        </div>
+        <div class="stat" id="st-venc" data-tone="">
+          <div class="stat-val" id="s-venc">0</div>
+          <div class="stat-lbl">Vencidas</div>
+        </div>
+        <div class="stat" id="st-prox" data-tone="">
+          <div class="stat-val" id="s-prox">0</div>
+          <div class="stat-lbl">Até 2 Dias</div>
+        </div>
+        <div class="stat" id="st-disp" data-tone="">
+          <div class="stat-val" id="s-disp">0</div>
+          <div class="stat-lbl">Sem DISP</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="s-total">0</div>
+          <div class="stat-lbl">Peças</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── CONTEÚDO PRINCIPAL (SPLIT LAYOUT) ── -->
+  <div class="container" id="app">
+
+    <!-- ── SIDEBAR / FORMULÁRIO ── -->
+    <aside class="sidebar">
+      <div>
+        <div class="section-label">Lançar Devolução</div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4;">
+          Prazo limite de devolução: <strong>7 dias corridos</strong> contados da data de inserção.
+        </p>
+
+        <form id="add-form" novalidate>
+          <div class="form-group">
+            <label for="f-codigo">Código da Peça *</label>
+            <input id="f-codigo" class="mono" autocomplete="off" placeholder="Ex: 20718450" />
+          </div>
+
+          <div class="form-group">
+            <label for="f-qtd">Quantidade *</label>
+            <input id="f-qtd" type="number" min="1" step="1" inputmode="numeric" placeholder="1" value="1" />
+          </div>
+
+          <div class="form-group">
+            <label for="f-nf">Número da NF *</label>
+            <input id="f-nf" class="mono" autocomplete="off" inputmode="numeric" placeholder="Ex: 004871" />
+          </div>
+
+          <div class="form-group">
+            <label for="f-disp">DISP/Chamado de Devolução <em>(opcional / preencher depois)</em></label>
+            <input id="f-disp" class="mono" autocomplete="off" placeholder="DISP/Chamado de Devolução" />
+          </div>
+
+          <div class="form-group">
+            <label for="f-data">Data de Entrada <em>(automática)</em></label>
+            <input id="f-data" class="mono" readonly tabindex="-1" />
+          </div>
+
+          <p class="err-msg" id="f-err" role="alert"></p>
+
+          <button type="submit" class="btn btn-primary" id="f-add" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Lançar Peça
+          </button>
+        </form>
+      </div>
+
+      <div>
+        <div class="section-label">Exportar & Ações</div>
+        <div class="export-row">
+          <button type="button" class="btn btn-ghost" data-export="pdf">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="9" y1="15" x2="15" y2="15" />
+            </svg>
+            PDF Vencidas
+          </button>
+          <button type="button" class="btn btn-ghost" data-export="xlsx">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            XLS Vencidas
+          </button>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <button type="button" class="btn btn-ghost" id="rm-examples" hidden style="width: 100%; font-size: 11px;">Remover Peças de Exemplo</button>
+          <p id="storage-note" hidden style="font-size: 11px; color: var(--text-dim); margin-top: 8px; line-height: 1.4;">Lançamentos salvos localmente neste navegador.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN / TABELA E FILTROS ── -->
+    <main class="main">
+
+      <!-- Faixa de alerta de peças vencidas -->
+      <div class="band-alert" id="band" role="alert" hidden>
+        <div class="band-content">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <p id="band-msg"></p>
+        </div>
+        <div class="band-actions">
+          <button type="button" class="btn btn-sm btn-danger" id="band-see">Ver Vencidas</button>
+          <button type="button" class="btn btn-sm btn-ghost" data-export="pdf">PDF</button>
+          <button type="button" class="btn btn-sm btn-ghost" data-export="xlsx">Excel</button>
+        </div>
+      </div>
+
+      <!-- Barra de ferramentas e busca -->
+      <div class="toolbar">
+        <div class="chips-group" role="group" aria-label="Filtro de peças">
+          <button type="button" class="chip" data-filter="todas" aria-pressed="true">Todas <span id="c-todas">(0)</span></button>
+          <button type="button" class="chip" data-filter="vencidas" aria-pressed="false">Vencidas <span id="c-vencidas">(0)</span></button>
+          <button type="button" class="chip" data-filter="semdisp" aria-pressed="false">Sem DISP <span id="c-semdisp">(0)</span></button>
+        </div>
+
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input type="search" id="q" placeholder="Buscar por código, NF ou DISP/Chamado…" autocomplete="off" />
+        </div>
+
+        <select class="filter-select" id="order">
+          <option value="urgente">Mais urgentes primeiro</option>
+          <option value="recente">Mais recentes primeiro</option>
+        </select>
+
+        <span class="record-count" id="list-count"></span>
+      </div>
+
+      <!-- Tabela de peças -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 140px;">PRAZO</th>
+              <th>CÓDIGO</th>
+              <th style="text-align: right; width: 70px;">QTD</th>
+              <th>NF</th>
+              <th>DISP</th>
+              <th>ENTRADA</th>
+              <th>VENCIMENTO</th>
+              <th style="text-align: center; width: 170px;">AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+
+        <div class="empty" id="empty" hidden></div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ── TELA DE CONTROLE ENCERRADO ── -->
+  <div class="closed" id="closed" hidden>
+    <div>
+      <h2>Controle Encerrado</h2>
+      <p>Você confirmou que o DISP de devolução foi aberto com sucesso.</p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px;">
+        <button type="button" class="btn btn-primary" id="btn-reopen">Abrir Controle Novamente</button>
+        <a href="../index.html" class="btn btn-ghost" style="text-decoration: none;">Voltar para Furos de Estoque</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RODAPÉ ── -->
+  <footer class="app-footer">
+    <p>By R.M. © 2026 - All rights reserved</p>
+    <div class="footer-socials">
+      <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub" aria-label="GitHub">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+      </a>
+      <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="social-link" title="LinkedIn" aria-label="LinkedIn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+        </svg>
+      </a>
+    </div>
+  </footer>
+
+  <!-- ── MODAL: AVISO DE PEÇAS VENCIDAS ── -->
+  <div class="overlay" id="ov-alert" hidden>
+    <div class="modal bad" role="alertdialog" aria-modal="true" aria-labelledby="al-title">
+      <h3 id="al-title"></h3>
+      <p id="al-text"></p>
+      <ul class="al-list" id="al-list"></ul>
+      <div class="row">
+        <button type="button" class="btn btn-ghost" data-export="pdf">Baixar PDF</button>
+        <button type="button" class="btn btn-ghost" data-export="xlsx">Baixar Excel</button>
+        <button type="button" class="btn btn-primary" id="al-close">Fechar Aviso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: EDITAR PEÇA ── -->
+  <div class="overlay" id="ov-edit" hidden>
+    <form class="modal" id="edit-form" role="dialog" aria-modal="true" aria-labelledby="ed-title" novalidate>
+      <h3 id="ed-title">Editar Peça</h3>
+      <div class="edit-grid">
+        <div class="form-group span2">
+          <label for="e-codigo">Código da Peça *</label>
+          <input id="e-codigo" class="mono" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label for="e-qtd">Quantidade *</label>
+          <input id="e-qtd" type="number" min="1" step="1" inputmode="numeric" />
+        </div>
+        <div class="form-group">
+          <label for="e-nf">Número da NF *</label>
+          <input id="e-nf" class="mono" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label for="e-disp">DISP/Chamado de Devolução</label>
+          <input id="e-disp" class="mono" autocomplete="off" placeholder="DISP/Chamado de Devolução" />
+        </div>
+        <div class="form-group">
+          <label for="e-data">Data de Entrada</label>
+          <input id="e-data" class="mono" readonly tabindex="-1" />
+        </div>
+      </div>
+      <p class="err-msg" id="e-err" role="alert"></p>
+      <div class="row">
+        <button type="button" class="btn btn-ghost" id="e-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── MODAL: VERIFICAÇÃO DE SAÍDA ── -->
+  <div class="overlay" id="ov-exit" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="x-title">
+      <div id="x-step1">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <span class="step">Verificação em duas etapas · 1 de 2</span>
+          <h3 id="x-title" class="vh">Verificação antes de sair</h3>
+          <p class="big-q">Já abriu o DISP de devolução?</p>
+          <div class="row">
+            <button type="button" class="btn btn-primary" id="x-no">Ainda não</button>
+            <button type="button" class="btn btn-ghost" id="x-yes">Sim, já abri</button>
+          </div>
+        </div>
+      </div>
+      <div id="x-step2" hidden>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <span class="step">Verificação em duas etapas · 2 de 2</span>
+          <h3>Confirmar saída</h3>
+          <p id="x-sum"></p>
+          <div class="row">
+            <button type="button" class="btn btn-ghost" id="x-back">Voltar ao controle</button>
+            <button type="button" class="btn btn-primary" id="x-confirm">Confirmar saída</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NOTIFICAÇÃO TOAST ── -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Bibliotecas de exportação -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- Lógica da aplicação -->
+  <script src="script_control_devolucoes.js"></script>
+</body>
+</html>
