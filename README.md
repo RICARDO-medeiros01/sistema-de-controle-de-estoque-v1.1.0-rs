@@ -124,7 +124,7 @@ Por ser uma aplicação web pura (client-side), não requer compilação ou inst
 
 ## 📄 Licença
 
-Este projeto está sob a licença By R.M. © 2026 - All rights reserved
+Este projeto está sob a licença [MIT](./LICENSE).
 
 ---
 
